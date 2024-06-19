@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autocorrect Keyboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Autocorrect Keyboard</h1>
+        <textarea id="input-text" placeholder="Type your text here..."></textarea>
+        <button onclick="correctText()">Correct</button>
+        <div id="output">
+            <h2>Corrected Text:</h2>
+            <p id="corrected-text"></p>
+        </div>
+    </div>
+
+    <script>
+        async function correctText() {
+            const text = document.getElementById('input-text').value;
+            const response = await fetch('/correct', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ text })
+            });
+            const data = await response.json();
+            document.getElementById('corrected-text').innerText = data.corrected_text;
+        }
+    </script>
+</body>
+</html>
