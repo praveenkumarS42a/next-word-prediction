@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template, request, jsonify
 from spellchecker_module import SpellCheckerModule
 
@@ -16,5 +17,5 @@ def correct():
     return jsonify({'corrected_text': corrected_text})
 
 if __name__ == '__main__':
-    app.run(debug=True)
-
+    port = int(os.environ.get('PORT', 5000))  # Get the port dynamically (Render will assign a port)
+    app.run(host='0.0.0.0', port=port, debug=True)

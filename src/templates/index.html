@@ -11,7 +11,7 @@
         <h1>Autocorrect Keyboard</h1>
         <textarea id="input-text" placeholder="Type your text here..."></textarea>
         <button onclick="correctText()">Correct</button>
-        <div id="output">
+        <div id="output" class="hidden">
             <h2>Corrected Text:</h2>
             <p id="corrected-text"></p>
         </div>
@@ -20,14 +20,20 @@
     <script>
         async function correctText() {
             const text = document.getElementById('input-text').value;
+            if (!text.trim()) {
+                alert('Please enter some text!');
+                return;
+            }
+
             const response = await fetch('/correct', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ text })
             });
+
             const data = await response.json();
+            const outputDiv = document.getElementById('output');
+            outputDiv.classList.remove('hidden');
             document.getElementById('corrected-text').innerText = data.corrected_text;
         }
     </script>

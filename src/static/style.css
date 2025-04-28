@@ -1,86 +1,95 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Poppins', sans-serif;
     margin: 0;
     padding: 0;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    background: linear-gradient(135deg, #ff7e5f, #feb47b);
-    animation: backgroundAnimation 10s ease infinite;
+    animation: backgroundShift 10s infinite alternate;
 }
 
-@keyframes backgroundAnimation {
-    0% { background: linear-gradient(135deg, #ff7e5f, #feb47b); }
-    50% { background: linear-gradient(135deg, #86a8e7, #91eae4); }
-    100% { background: linear-gradient(135deg, #ff7e5f, #feb47b); }
+@keyframes backgroundShift {
+    0% { background: linear-gradient(135deg, #667eea, #764ba2); }
+    50% { background: linear-gradient(135deg, #ff758c, #ff7eb3); }
+    100% { background: linear-gradient(135deg, #667eea, #764ba2); }
 }
 
 .container {
-    background: rgba(255, 255, 255, 0.9);
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
     text-align: center;
-    animation: fadeIn 2s ease;
+    width: 90%;
+    max-width: 500px;
+    animation: fadeIn 1.5s ease-out;
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+h1 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 20px;
 }
 
 textarea {
     width: 100%;
-    height: 100px;
-    padding: 10px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    height: 150px;
+    padding: 15px;
     font-size: 16px;
+    border: 2px solid #ccc;
+    border-radius: 10px;
     resize: none;
-    animation: textAreaFadeIn 2s ease;
+    outline: none;
+    transition: border-color 0.3s;
 }
 
-@keyframes textAreaFadeIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
+textarea:focus {
+    border-color: #667eea;
 }
 
 button {
-    padding: 10px 20px;
-    background-color: #007BFF;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+    margin-top: 20px;
+    padding: 12px 30px;
     font-size: 16px;
-    animation: buttonFadeIn 2s ease;
+    border: none;
+    background: #667eea;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
 }
 
 button:hover {
-    background-color: #0056b3;
-}
-
-@keyframes buttonFadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+    background: #5a67d8;
 }
 
 #output {
-    margin-top: 20px;
-    animation: outputFadeIn 2s ease;
+    margin-top: 30px;
+    text-align: left;
 }
 
-@keyframes outputFadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
+#output h2 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 10px;
 }
 
 #corrected-text {
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background: white;
+    background: #f9f9f9;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
     font-size: 16px;
+    min-height: 80px;
+}
+
+.hidden {
+    display: none;
 }

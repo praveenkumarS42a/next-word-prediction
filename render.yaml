@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: autocorrect-keyboard
+    env: python
+    plan: free
+    buildCommand: ""
+    startCommand: gunicorn main:app  # Use main.py here
