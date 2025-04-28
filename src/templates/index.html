@@ -3,39 +3,218 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Autocorrect Keyboard</title>
+    <title>Smart Autocorrect Keyboard</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <div class="container">
-        <h1>Autocorrect Keyboard</h1>
-        <textarea id="input-text" placeholder="Type your text here..."></textarea>
-        <button onclick="correctText()">Correct</button>
-        <div id="output" class="hidden">
-            <h2>Corrected Text:</h2>
-            <p id="corrected-text"></p>
+        <h1>Smart Autocorrect Keyboard</h1>
+        
+        <div class="input-area">
+            <textarea id="text-input" placeholder="Start typing here or use the virtual keyboard below..."></textarea>
+            
+            <div id="result-container">
+                <div id="result-display"></div>
+                <div id="loading-spinner" class="hidden">
+                    <i class="fas fa-spinner fa-spin"></i> Processing...
+                </div>
+            </div>
+            
+            <button id="correct-button">
+                <i class="fas fa-magic"></i> Correct Text
+            </button>
+        </div>
+        
+        <div class="virtual-keyboard">
+            <div class="keyboard-row">
+                <button class="key" data-key="q">Q</button>
+                <button class="key" data-key="w">W</button>
+                <button class="key" data-key="e">E</button>
+                <button class="key" data-key="r">R</button>
+                <button class="key" data-key="t">T</button>
+                <button class="key" data-key="y">Y</button>
+                <button class="key" data-key="u">U</button>
+                <button class="key" data-key="i">I</button>
+                <button class="key" data-key="o">O</button>
+                <button class="key" data-key="p">P</button>
+            </div>
+            <div class="keyboard-row">
+                <button class="key" data-key="a">A</button>
+                <button class="key" data-key="s">S</button>
+                <button class="key" data-key="d">D</button>
+                <button class="key" data-key="f">F</button>
+                <button class="key" data-key="g">G</button>
+                <button class="key" data-key="h">H</button>
+                <button class="key" data-key="j">J</button>
+                <button class="key" data-key="k">K</button>
+                <button class="key" data-key="l">L</button>
+            </div>
+            <div class="keyboard-row">
+                <button class="key" data-key="z">Z</button>
+                <button class="key" data-key="x">X</button>
+                <button class="key" data-key="c">C</button>
+                <button class="key" data-key="v">V</button>
+                <button class="key" data-key="b">B</button>
+                <button class="key" data-key="n">N</button>
+                <button class="key" data-key="m">M</button>
+                <button class="key backspace-key" data-key="backspace">
+                    <i class="fas fa-backspace"></i>
+                </button>
+            </div>
+            <div class="keyboard-row">
+                <button class="key" data-key=",">,</button>
+                <button class="key space-key" data-key=" ">Space</button>
+                <button class="key" data-key=".">.</button>
+            </div>
+        </div>
+        
+        <div class="keyboard-info">
+            <p>Type your text and click "Correct Text" to autocorrect any spelling mistakes.</p>
         </div>
     </div>
 
     <script>
-        async function correctText() {
-            const text = document.getElementById('input-text').value;
-            if (!text.trim()) {
-                alert('Please enter some text!');
-                return;
-            }
-
-            const response = await fetch('/correct', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text })
+        document.addEventListener('DOMContentLoaded', function() {
+            const textInput = document.getElementById('text-input');
+            const resultDisplay = document.getElementById('result-display');
+            const correctButton = document.getElementById('correct-button');
+            const keys = document.querySelectorAll('.key');
+            const loadingSpinner = document.getElementById('loading-spinner');
+            
+            // Add this CSS to your existing file
+            const style = document.createElement('style');
+            style.textContent = `
+                .hidden { display: none; }
+                .keyboard-info { 
+                    text-align: center; 
+                    margin-top: 20px; 
+                    color: #666;
+                    font-size: 14px;
+                }
+                #loading-spinner {
+                    padding: 10px;
+                    text-align: center;
+                    color: var(--primary-color);
+                }
+                .key.active {
+                    transform: translateY(2px);
+                    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+                    background-color: #f0f0f0;
+                }
+                #result-container {
+                    position: relative;
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Virtual keyboard functionality
+            keys.forEach(key => {
+                key.addEventListener('click', function() {
+                    const keyValue = this.getAttribute('data-key');
+                    
+                    // Add active class for visual feedback
+                    this.classList.add('active');
+                    setTimeout(() => {
+                        this.classList.remove('active');
+                    }, 100);
+                    
+                    if (keyValue === 'backspace') {
+                        textInput.value = textInput.value.slice(0, -1);
+                    } else {
+                        textInput.value += keyValue;
+                    }
+                    
+                    textInput.focus();
+                });
             });
-
-            const data = await response.json();
-            const outputDiv = document.getElementById('output');
-            outputDiv.classList.remove('hidden');
-            document.getElementById('corrected-text').innerText = data.corrected_text;
-        }
+            
+            // Physical keyboard integration
+            textInput.addEventListener('keydown', function(e) {
+                // Find the corresponding virtual key and highlight it
+                const key = document.querySelector(`.key[data-key="${e.key.toLowerCase()}"]`);
+                if (key) {
+                    key.classList.add('active');
+                    setTimeout(() => {
+                        key.classList.remove('active');
+                    }, 100);
+                }
+                
+                // Handle special keys
+                if (e.key === ' ') {
+                    const spaceKey = document.querySelector('.space-key');
+                    if (spaceKey) {
+                        spaceKey.classList.add('active');
+                        setTimeout(() => {
+                            spaceKey.classList.remove('active');
+                        }, 100);
+                    }
+                }
+                
+                if (e.key === 'Backspace') {
+                    const backspaceKey = document.querySelector('.backspace-key');
+                    if (backspaceKey) {
+                        backspaceKey.classList.add('active');
+                        setTimeout(() => {
+                            backspaceKey.classList.remove('active');
+                        }, 100);
+                    }
+                }
+            });
+            
+            // Autocorrect functionality
+            correctButton.addEventListener('click', function() {
+                const text = textInput.value;
+                
+                if (!text.trim()) {
+                    resultDisplay.textContent = 'Please enter some text to correct.';
+                    return;
+                }
+                
+                // Show loading spinner
+                loadingSpinner.classList.remove('hidden');
+                resultDisplay.textContent = '';
+                
+                fetch('/correct', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: text }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Hide loading spinner
+                    loadingSpinner.classList.add('hidden');
+                    
+                    // Display the result with highlighting for changes
+                    const originalWords = text.split(' ');
+                    const correctedWords = data.corrected_text.split(' ');
+                    let resultHTML = '';
+                    
+                    for (let i = 0; i < correctedWords.length; i++) {
+                        if (i < originalWords.length && originalWords[i] !== correctedWords[i]) {
+                            resultHTML += `<span style="color: var(--primary-color); font-weight: bold;">${correctedWords[i]}</span> `;
+                        } else {
+                            resultHTML += `${correctedWords[i]} `;
+                        }
+                    }
+                    
+                    resultDisplay.innerHTML = resultHTML;
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    loadingSpinner.classList.add('hidden');
+                    resultDisplay.textContent = 'Error correcting text. Please try again.';
+                });
+            });
+            
+            // Auto-resize text area
+            textInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+        });
     </script>
 </body>
 </html>
