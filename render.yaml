@@ -3,5 +3,8 @@ services:
     name: autocorrect-keyboard
     env: python
     plan: free
-    buildCommand: ""
-    startCommand: gunicorn main:app  # Use main.py here
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn src.main:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11
